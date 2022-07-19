@@ -1,0 +1,9 @@
+﻿global using WP.User.Domain.Commands.Validations;
+global using MediatR;
+global using System.Net;
+global using WP.Infrastructures.Core;
+global using WP.Infrastructures.EventBus.InMemory;
+global using WP.Infrastructures.SqlSugar;
+global using WP.User.Domain.Commands;
+global using WP.User.Domain.Entities;
+global using Mapster;
