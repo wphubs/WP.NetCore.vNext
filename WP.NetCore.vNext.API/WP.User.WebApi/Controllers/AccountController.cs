@@ -1,33 +1,41 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using WP.Infrastructures.EventBus.InMemory;
-using WP.Shared.WebApi.Controller;
-using WP.User.Application.Dtos;
-using WP.User.Application.Interfaces;
+﻿using WP.Infrastructures.JwtBearer;
 
-namespace WP.User.WebApi.Controllers
+namespace WP.User.WebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AccountController : ApiController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AccountController : ApiController
+    private readonly IAccountAppService accountAppService;
+
+    public AccountController(IAccountAppService accountAppService, INotificationHandler<DomainNotification> notifications):base(notifications)
     {
-        private readonly IAccountAppService accountAppService;
-        private readonly DomainNotificationHandler notifications;
-
-        public AccountController(IAccountAppService accountAppService, INotificationHandler<DomainNotification> notifications)
-        {
-            this.accountAppService = accountAppService;
-            this.notifications = (DomainNotificationHandler)notifications;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Post(UserLoginDto loginUser)
-        {
-            await accountAppService.UserAccountAsync(loginUser);
-            var bb = notifications.GetNotifications();
-            return Ok(bb);
-        }
-
+        this.accountAppService = accountAppService;
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Post(UserLoginDto loginUser)
+    {
+        loginUser.Account = "admin";
+        loginUser.Password = "670b14728ad9902aecba32e22fa4f6bd";
+        var result=await accountAppService.UserAccountAsync(loginUser);
+        if (result)
+        {
+            var userInfo = await accountAppService.GetUserInfo(loginUser.Account);
+            var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>()
+            {
+                { "UserId", userInfo.Id },  
+                { "Account", userInfo.Account  },
+                { "Name", userInfo.Name  },
+            });
+            var refreshToken = JWTEncryption.GenerateRefreshToken(accessToken);
+            return CustomResponse(new UserTokenInfoDto() {Token= accessToken, RefreshToken = refreshToken });
+        }
+        else
+        {
+            return CustomResponse();
+        }
+       
+    }
+
 }

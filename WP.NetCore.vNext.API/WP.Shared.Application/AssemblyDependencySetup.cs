@@ -11,49 +11,55 @@ namespace WP.Shared.Application
     public static class AssemblyDependencySetup
     {
 
-        public static void AddAssemblyDependency(this IServiceCollection services, Type type)
+        public static void AddAssemblyDependency(this IServiceCollection services, params Type[] types)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
             //if (assemblyName.IsNullOrEmpty()) throw new ArgumentNullException(nameof(assemblyName));
             //Assembly assembly = Assembly.Load(assemblyName);
-            List<Type> ts = type.Assembly.GetExportedTypes().Where(t => !t.IsInterface && !t.IsSealed && !t.IsGenericType).ToList();
-            foreach (var classitem in ts)
+            foreach (Type type in types)
             {
-                IEnumerable<Attribute> attrs = classitem.GetCustomAttributes();
-                foreach (var at in attrs)
+
+                List<Type> ts = type.Assembly.GetExportedTypes().Where(t => !t.IsInterface && !t.IsSealed && !t.IsGenericType).ToList();
+                foreach (var classitem in ts)
                 {
-                    if (at is UseDependencyInjectionAttribute)
+                    IEnumerable<Attribute> attrs = classitem.GetCustomAttributes();
+                    foreach (var at in attrs)
                     {
-                        UseDependencyInjectionAttribute attr = classitem.GetCustomAttribute(typeof(UseDependencyInjectionAttribute)) as UseDependencyInjectionAttribute;
-                        List<Type> interfaceType = classitem.GetInterfaces().ToList();
-                        if (interfaceType.Count == 0)
+                        if (at is UseDependencyInjectionAttribute)
                         {
-                            Type baseType = classitem.BaseType;
-                            while (baseType != null)
+                            UseDependencyInjectionAttribute attr = classitem.GetCustomAttribute(typeof(UseDependencyInjectionAttribute)) as UseDependencyInjectionAttribute;
+                            List<Type> interfaceType = classitem.GetInterfaces().ToList();
+                            if (interfaceType.Count == 0)
                             {
-                                if (baseType.IsAbstract)
+                                Type baseType = classitem.BaseType;
+                                while (baseType != null)
                                 {
-                                    ServiceDescriptor serviceDescriptor = new ServiceDescriptor(baseType, classitem, attr.Lifetime);
-                                    services.Add(serviceDescriptor);
-                                    break;
-                                }
-                                else
-                                {
-                                    baseType = baseType.BaseType;
+                                    if (baseType.IsAbstract)
+                                    {
+                                        ServiceDescriptor serviceDescriptor = new ServiceDescriptor(baseType, classitem, attr.Lifetime);
+                                        services.Add(serviceDescriptor);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        baseType = baseType.BaseType;
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            foreach (Type faceitem in interfaceType)
+                            else
                             {
-                                ServiceDescriptor serviceDescriptor = new ServiceDescriptor(faceitem, classitem, attr.Lifetime);
-                                services.Add(serviceDescriptor);
+                                foreach (Type faceitem in interfaceType)
+                                {
+                                    ServiceDescriptor serviceDescriptor = new ServiceDescriptor(faceitem, classitem, attr.Lifetime);
+                                    services.Add(serviceDescriptor);
+                                }
                             }
                         }
                     }
                 }
+
             }
+
         }
     }
 }

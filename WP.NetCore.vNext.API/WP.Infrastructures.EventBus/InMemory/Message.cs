@@ -8,7 +8,7 @@ using WP.Infrastructures.Core;
 
 namespace WP.Infrastructures.EventBus.InMemory
 {
-    public abstract class Message : IRequest<AppResult>
+    public abstract class Message : IRequest<bool>
     {
         public string MessageType { get; protected set; }
         public Guid AggregateId { get; protected set; }

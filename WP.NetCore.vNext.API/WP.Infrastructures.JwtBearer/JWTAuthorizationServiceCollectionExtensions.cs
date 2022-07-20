@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WP.Infrastructures.Core.Context;
 
 namespace WP.Infrastructures.JwtBearer;
 
@@ -19,117 +22,87 @@ namespace WP.Infrastructures.JwtBearer;
 /// </summary>
 public static class JWTAuthorizationServiceCollectionExtensions
 {
-    /// <summary>
-    /// 添加 JWT 授权
-    /// </summary>
-    /// <param name="authenticationBuilder"></param>
-    /// <param name="tokenValidationParameters">token 验证参数</param>
-    /// <param name="jwtBearerConfigure"></param>
-    /// <param name="enableGlobalAuthorize">启动全局授权</param>
-    /// <returns></returns>
-    public static AuthenticationBuilder AddJwt(this AuthenticationBuilder authenticationBuilder, object tokenValidationParameters = default, Action<JwtBearerOptions> jwtBearerConfigure = null, bool enableGlobalAuthorize = false)
+    public static void AddJwtAuthentication(this IServiceCollection services)
     {
-        // 获取框架上下文
-        _ = JWTEncryption.GetFrameworkContext(Assembly.GetCallingAssembly());
-
-        // 配置 JWT 选项
-        ConfigureJWTOptions(authenticationBuilder.Services);
-
-        // 添加授权
-        authenticationBuilder.AddJwtBearer(options =>
+        services.AddScoped<IUserContext, UserContext>();
+        PermissionRequirement permissionRequirement = new PermissionRequirement();
+        services.AddAuthorization(option =>
         {
-            // 反射获取全局配置
-            var jwtSettings = JWTEncryption.FrameworkApp.GetMethod("GetOptions").MakeGenericMethod(typeof(JWTSettingsOptions)).Invoke(null, new object[] { null }) as JWTSettingsOptions;
-
-            // 配置 JWT 验证信息
-            options.TokenValidationParameters = (tokenValidationParameters as TokenValidationParameters) ?? JWTEncryption.CreateTokenValidationParameters(jwtSettings);
-
-            // 添加自定义配置
-            jwtBearerConfigure?.Invoke(options);
+            option.AddPolicy("Permission", policy => policy.AddRequirements(permissionRequirement));
         });
-
-        //启用全局授权
-        if (enableGlobalAuthorize)
+        services.AddAuthentication(options =>
         {
-            authenticationBuilder.Services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new AuthorizeFilter());
-            });
-        }
-
-        return authenticationBuilder;
-    }
-
-    /// <summary>
-    /// 添加 JWT 授权
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="authenticationConfigure">授权配置</param>
-    /// <param name="tokenValidationParameters">token 验证参数</param>
-    /// <param name="jwtBearerConfigure"></param>
-    /// <returns></returns>
-    public static AuthenticationBuilder AddJwt(this IServiceCollection services, Action<AuthenticationOptions> authenticationConfigure = null, object tokenValidationParameters = default, Action<JwtBearerOptions> jwtBearerConfigure = null)
-    {
-        // 获取框架上下文
-        _ = JWTEncryption.GetFrameworkContext(Assembly.GetCallingAssembly());
-
-        // 添加默认授权
-        var authenticationBuilder = services.AddAuthentication(options =>
-        {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = nameof(ResponseResultHandler);
+            options.DefaultForbidScheme = nameof(ResponseResultHandler);
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            // 添加自定义配置
-            authenticationConfigure?.Invoke(options);
-        });
+        })      // 添加JwtBearer服务
+             .AddJwtBearer(o =>
+             {
+                 o.TokenValidationParameters = CreateTokenValidationParameters();
+                 o.Events = new JwtBearerEvents
+                 {
+                     OnMessageReceived = context =>
+                     {
+                         var accessToken = context.Request.Query["access_token"];
+                         if (!string.IsNullOrEmpty(accessToken) && (context.HttpContext.Request.Path.StartsWithSegments("/welcomehub")))
+                         {
+                             context.Token = accessToken;
+                         }
+                         return Task.CompletedTask;
+                     },
+                     OnTokenValidated = context =>
+                     {
+                         var userContext = context.HttpContext.RequestServices.GetService<IUserContext>();
+                         var claims = context.Principal.Claims;
+                         userContext.Id = long.Parse(claims.First(x => x.Type == "Id").Value);
+                         userContext.Name = claims.First(x => x.Type == "Name").Value;
+                         return Task.CompletedTask;
+                     },
+                     OnAuthenticationFailed = context =>
+                     {
+                         // 如果过期，则把<是否过期>添加到，返回头信息中
+                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                         {
+                             context.Response.Headers.Add("Token-Expired", "true");
+                         }
+                         return Task.CompletedTask;
+                     }
+                 };
 
-        AddJwt(authenticationBuilder, tokenValidationParameters, jwtBearerConfigure);
+             })
+             .AddScheme<AuthenticationSchemeOptions, ResponseResultHandler>(nameof(ResponseResultHandler), o => { }); 
 
-        return authenticationBuilder;
+
+        services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+        services.AddSingleton(permissionRequirement);
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
     }
 
-    /// <summary>
-    /// 添加 JWT 授权
-    /// </summary>
-    /// <typeparam name="TAuthorizationHandler"></typeparam>
-    /// <param name="services"></param>
-    /// <param name="authenticationConfigure"></param>
-    /// <param name="tokenValidationParameters"></param>
-    /// <param name="jwtBearerConfigure"></param>
-    /// <param name="enableGlobalAuthorize"></param>
-    /// <returns></returns>
-    public static AuthenticationBuilder AddJwt<TAuthorizationHandler>(this IServiceCollection services, Action<AuthenticationOptions> authenticationConfigure = null, object tokenValidationParameters = default, Action<JwtBearerOptions> jwtBearerConfigure = null, bool enableGlobalAuthorize = false)
-        where TAuthorizationHandler : class, IAuthorizationHandler
+
+    public static TokenValidationParameters CreateTokenValidationParameters()
     {
-        // 植入 Furion 框架
-        var furionAssembly = JWTEncryption.GetFrameworkContext(Assembly.GetCallingAssembly());
-
-        // 获取添加授权类型
-        var authorizationServiceCollectionExtensionsType = furionAssembly.GetType("Microsoft.Extensions.DependencyInjection.AuthorizationServiceCollectionExtensions");
-        var addAppAuthorizationMethod = authorizationServiceCollectionExtensionsType
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Where(u => u.Name == "AddAppAuthorization" && u.IsGenericMethod && u.GetParameters().Length > 0 && u.GetParameters()[0].ParameterType == typeof(IServiceCollection)).First();
-
-        // 添加策略授权服务
-        addAppAuthorizationMethod.MakeGenericMethod(typeof(TAuthorizationHandler)).Invoke(null, new object[] { services, null, enableGlobalAuthorize });
-
-        // 添加授权
-        return services.AddJwt(authenticationConfigure, tokenValidationParameters, jwtBearerConfigure);
-    }
-
-    /// <summary>
-    /// 添加 JWT 授权
-    /// </summary>
-    /// <param name="services"></param>
-    private static void ConfigureJWTOptions(IServiceCollection services)
-    {
-        // 配置验证
-        services.AddOptions<JWTSettingsOptions>()
-                .BindConfiguration("JWTSettings")
-                .ValidateDataAnnotations()
-                .PostConfigure(options =>
-                {
-                    _ = JWTEncryption.SetDefaultJwtSettings(options);
-                });
+        var jwtSettings = JWTEncryption.GetJWTSettings();
+        return new TokenValidationParameters
+        {
+            // 验证签发方密钥
+            ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey.Value,
+            // 签发方密钥
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.IssuerSigningKey)),
+            // 验证签发方
+            ValidateIssuer = jwtSettings.ValidateIssuer.Value,
+            // 设置签发方
+            ValidIssuer = jwtSettings.ValidIssuer,
+            // 验证签收方
+            ValidateAudience = jwtSettings.ValidateAudience.Value,
+            // 设置接收方
+            ValidAudience = jwtSettings.ValidAudience,
+            // 验证生存期
+            ValidateLifetime = jwtSettings.ValidateLifetime.Value,
+            // 过期时间容错值
+            ClockSkew = TimeSpan.FromSeconds(jwtSettings.ClockSkew.Value),
+        };
     }
 }

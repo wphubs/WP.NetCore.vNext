@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Mapster;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WP.User.Domain.Interfaces;
 
 namespace WP.User.Application.Services;
 
@@ -10,23 +12,24 @@ namespace WP.User.Application.Services;
 public class AccountAppService : IAccountAppService
 {
     private readonly IMediatorHandler Bus;
+    private readonly IUserRepository userRepository;
 
-    public AccountAppService(IMediatorHandler bus)
+    public AccountAppService(IMediatorHandler bus, IUserRepository userRepository)
     {
         this.Bus = bus;
+        this.userRepository = userRepository;
     }
 
-    public async Task UserAccountAsync(UserLoginDto userLoginDto)
+    public async Task<bool> UserAccountAsync(UserLoginDto userLoginDto)
     {
-
-        //await Bus.RaiseEvent(new DomainNotification("", "该Name已经被使用！"));
-
-        await Bus.SendCommand(new UserLoginCommand(userLoginDto.Account, userLoginDto.Password));
-
-
+        return await Bus.SendCommand(new UserLoginCommand(userLoginDto.Account, userLoginDto.Password));
     }
 
-
-
-
+    public async Task<UserInfoDto> GetUserInfo(string account)
+    {
+        //await Bus.RaiseEvent(new DomainNotification("", "该Name已经被使用！"));
+        var objUser = await userRepository.GetUserInfo(account);
+        var userInfo = objUser.Adapt<UserInfoDto>();
+        return userInfo; 
+    }
 }

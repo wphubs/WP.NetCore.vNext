@@ -8,6 +8,6 @@ namespace WP.User.Domain.Interfaces
 {
     public interface IUserRepository
     {
-
+        Task<SysUser> GetUserInfo(string account);
     }
 }

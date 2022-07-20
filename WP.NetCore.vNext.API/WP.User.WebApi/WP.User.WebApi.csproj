@@ -11,9 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WP.Infrastructures.JwtBearer\WP.Infrastructures.JwtBearer.csproj" />
     <ProjectReference Include="..\WP.Shared.Application\WP.Shared.Application.csproj" />
     <ProjectReference Include="..\WP.Shared.WebApi\WP.Shared.WebApi.csproj" />
     <ProjectReference Include="..\WP.User.Application\WP.User.Application.csproj" />
+    <ProjectReference Include="..\WP.User.Infrastruct\WP.User.Infrastruct.csproj" />
   </ItemGroup>
 
 </Project>

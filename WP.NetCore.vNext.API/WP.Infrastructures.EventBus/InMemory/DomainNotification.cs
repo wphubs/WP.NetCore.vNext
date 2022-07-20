@@ -12,7 +12,6 @@ namespace WP.Infrastructures.EventBus.InMemory
         // 标识
         public Guid DomainNotificationId { get; private set; }
         // 键（可以根据这个key，获取当前key下的全部通知信息）
-        // 这个我们在事件源和事件回溯的时候会用到，伏笔
         public string Key { get; private set; }
         // 值（与key对应）
         public string Value { get; private set; }

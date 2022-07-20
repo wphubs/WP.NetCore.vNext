@@ -10,7 +10,7 @@ using WP.Infrastructures.Core;
 
 namespace WP.Infrastructures.EventBus.InMemory
 {
-    public class CommandHandler: AbstractAppService
+    public class CommandHandler
     {
         // 注入工作单元
         //private readonly IUnitOfWork _uow;

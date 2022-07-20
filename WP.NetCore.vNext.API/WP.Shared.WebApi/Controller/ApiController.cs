@@ -1,37 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.Results;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using WP.Infrastructures.Core;
+using WP.Infrastructures.EventBus.InMemory;
 
 namespace WP.Shared.WebApi.Controller
 {
     [ApiController]
     public abstract class ApiController : ControllerBase
     {
-        [NonAction]
-        protected virtual ObjectResult Problem(dynamic exception)
+        private readonly DomainNotificationHandler notifications;
+        public ApiController(INotificationHandler<DomainNotification> notifications)
         {
-            var problemDetails = exception.Content;
+            this.notifications = (DomainNotificationHandler)notifications;
+        }
 
-            return Problem(problemDetails.Detail
-                    , problemDetails.Instance
-                    , problemDetails.Status
-                    , problemDetails.Title
-                    , problemDetails.Type);
+        protected ActionResult CustomResponse(object result = null)
+        {
+            var domainNotifications = notifications.GetNotifications();
+            if (domainNotifications.Any())
+            {
+                return BadRequest(domainNotifications);
+            }
+            return Ok(result);
+       
         }
 
 
-        [NonAction]
-        protected virtual ActionResult Result(AppResult appSrvResult)
-        {
-            if (appSrvResult.IsSuccess)
-                return Ok(appSrvResult.Content);
-            return Problem(appSrvResult.ProblemDetails);
-        }
     }
 }

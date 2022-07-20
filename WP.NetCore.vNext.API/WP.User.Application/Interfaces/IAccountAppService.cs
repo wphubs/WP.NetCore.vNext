@@ -2,6 +2,8 @@
 
 public interface IAccountAppService
 {
-    Task UserAccountAsync(UserLoginDto userLoginDto);
+    Task<bool> UserAccountAsync(UserLoginDto userLoginDto);
+
+    Task<UserInfoDto> GetUserInfo(string account);
 
 }

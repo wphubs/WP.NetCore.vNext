@@ -11,7 +11,7 @@ namespace WP.Infrastructures.Core
 {
     public class Appsettings
     {
-        static IConfiguration Configuration { get; set; }
+        public static IConfiguration Configuration { get; set; }
         static string contentPath { get; set; }
 
         public Appsettings(string contentPath)
@@ -22,6 +22,8 @@ namespace WP.Infrastructures.Core
                .Add(new JsonConfigurationSource { Path = Path, Optional = false, ReloadOnChange = true })
                .Build();
         }
+
+
 
         /// <summary>
         /// 封装要操作的字符

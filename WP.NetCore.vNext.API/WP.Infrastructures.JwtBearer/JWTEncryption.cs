@@ -13,11 +13,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-
+using WP.Infrastructures.Core;
 
 namespace WP.Infrastructures.JwtBearer;
 
@@ -308,7 +309,8 @@ public class JWTEncryption
     /// <returns></returns>
     public static JWTSettingsOptions GetJWTSettings()
     {
-        return FrameworkApp.GetMethod("GetOptions").MakeGenericMethod(typeof(JWTSettingsOptions)).Invoke(null, new object[] { null }) as JWTSettingsOptions ?? SetDefaultJwtSettings(new JWTSettingsOptions());
+        var jwtSetting = Appsettings.Configuration.GetSection("JWTSettings").Get<JWTSettingsOptions>();
+        return jwtSetting;
     }
 
     /// <summary>
@@ -441,7 +443,7 @@ public class JWTEncryption
 
         // 获取 Furion 程序集名称
         var furionAssemblyName = callAssembly.GetReferencedAssemblies()
-                                                   .FirstOrDefault(u => u.Name == "Furion" || u.Name == "Furion.Pure")
+                                                   .FirstOrDefault(u => u.Name == "WP.User.WebApi")
                                                    ?? throw new InvalidOperationException("No `Furion` assembly installed in the current project was detected.");
 
         // 加载 Furion 程序集

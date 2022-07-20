@@ -35,10 +35,9 @@ namespace WP.Infrastructures.EventBus.InMemory
         /// <typeparam name="T"></typeparam>
         /// <param name="command"></param>
         /// <returns></returns>
-        public Task<AppResult> SendCommand<T>(T command) where T : Command
+        public Task<bool> SendCommand<T>(T command) where T : Command
         {
-            //这个是正确的
-            return _mediator.Send(command);//请注意 入参 的类型
+            return _mediator.Send(command);
         }
 
         /// <summary>

@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WP.Infrastructures.Core\WP.Infrastructures.Core.csproj" />
+  </ItemGroup>
+
 </Project>

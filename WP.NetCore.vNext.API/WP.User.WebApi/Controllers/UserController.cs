@@ -1,27 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using WP.Shared.WebApi.Controller;
-using WP.User.Application.Dtos;
-using WP.User.Application.Interfaces;
-using WP.User.Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
 
-namespace WP.User.WebApi.Controllers
+namespace WP.User.WebApi.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class UserController : ApiController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ApiController
+    private readonly IUserAppService userAppService;
+
+    public UserController(IUserAppService userAppService,INotificationHandler<DomainNotification> notifications):base(notifications)
     {
-        private readonly IUserAppService userAppService;
+        this.userAppService = userAppService;
+    }
 
-        public UserController(IUserAppService userAppService)
-        {
-            this.userAppService = userAppService;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Post(UserCreateOrUpdate userCreateOrUpdate)
-        {
-            return Result(await userAppService.CreateUserAsync(userCreateOrUpdate));
-        }
+    /// <summary>
+    /// 创建用户
+    /// </summary>
+    /// <param name="userCreateOrUpdate"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> Post(UserCreateOrUpdate userCreateOrUpdate)
+    {
+        await userAppService.CreateUserAsync(userCreateOrUpdate);
+        return CustomResponse();
     }
 }

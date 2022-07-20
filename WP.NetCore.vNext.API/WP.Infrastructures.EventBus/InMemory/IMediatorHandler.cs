@@ -16,7 +16,7 @@ namespace WP.Infrastructures.EventBus.InMemory
         /// <typeparam name="T"> 泛型 </typeparam>
         /// <param name="command"> 命令模型</param>
         /// <returns></returns>
-        Task<AppResult> SendCommand<T>(T command) where T : Command;
+        Task<bool> SendCommand<T>(T command) where T : Command;
 
 
         /// <summary>
