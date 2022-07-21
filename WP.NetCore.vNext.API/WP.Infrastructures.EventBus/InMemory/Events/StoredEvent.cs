@@ -23,8 +23,7 @@ namespace WP.Infrastructures.EventBus.InMemory
             User = user;
         }
 
-        // 为了EFCore能正确CodeFirst
-        protected StoredEvent() { }
+    
         // 事件存储Id
         public Guid Id { get; private set; }
         // 存储的数据

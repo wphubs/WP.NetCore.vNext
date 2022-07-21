@@ -12,7 +12,7 @@ namespace WP.Shared.Application
 {
     public static class SqlsugarSetup
     {
-        public static void AddSqlsugarSetup(this IServiceCollection services, Type Type)
+        public static void AddSqlsugarSetup(this IServiceCollection services, List<Type> types)
         {
 
             var strConn = Appsettings.Get("DBConnection");
@@ -66,8 +66,12 @@ namespace WP.Shared.Application
                 if (Appsettings.Get("SeedData").ToBool())
                 {
                     sqlSugar.DbMaintenance.CreateDatabase();
-                    Type[] types = Type.Assembly.GetTypes().Where(it => it.FullName.Contains("Entities.")).ToArray();
-                    sqlSugar.CodeFirst.SetStringDefaultLength(255).InitTables(types);
+                    foreach (Type item in types)
+                    {
+                        Type[] t = item.Assembly.GetTypes().Where(it => it.FullName.Contains("Entities.")|| it.FullName.Contains("StoredEvent")).ToArray();
+                        sqlSugar.CodeFirst.SetStringDefaultLength(255).InitTables(t);
+                    }
+            
                 }
             });
 

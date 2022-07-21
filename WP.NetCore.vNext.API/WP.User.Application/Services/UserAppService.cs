@@ -16,7 +16,7 @@
         /// </summary>
         /// <param name="userCreateOrUpdate"></param>
         /// <returns></returns>
-        public async Task CreateUserAsync(UserCreateOrUpdate userCreateOrUpdate)
+        public async Task CreateUserAsync(UserCreateOrUpdateDto userCreateOrUpdate)
         {
            await Bus.SendCommand(new CreateUserCommand(userCreateOrUpdate.account, userCreateOrUpdate.password));
         }

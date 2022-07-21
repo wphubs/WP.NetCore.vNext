@@ -19,6 +19,13 @@ namespace WP.User.Infrastruct
         {
             this.userRepository = userRepository;
         }
+
+
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
         public async Task<SysUser> GetUserInfo(string account)
         {
             return await userRepository.FirstOrDefaultAsync(x => x.Account == account);

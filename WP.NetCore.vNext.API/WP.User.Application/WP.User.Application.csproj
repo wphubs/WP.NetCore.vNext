@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mapper\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WP.Shared.Application\WP.Shared.Application.csproj" />
     <ProjectReference Include="..\WP.User.Domain\WP.User.Domain.csproj" />
   </ItemGroup>

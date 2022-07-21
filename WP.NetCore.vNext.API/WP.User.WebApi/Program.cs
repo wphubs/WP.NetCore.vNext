@@ -41,7 +41,7 @@ builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddScoped<IMediatorHandler, InMemoryBus>();
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 IdGenerater.SetWorkerId(Appsettings.Get("WorkerId"));
-builder.Services.AddSqlsugarSetup(typeof(SysUser));
+builder.Services.AddSqlsugarSetup(new List<Type>() { typeof(SysUser), typeof(StoredEvent) });
 builder.Services.AddScoped<ISqlSugarRepository, SqlSugarRepository>();
 builder.Services.AddScoped(typeof(ISqlSugarRepository<>), typeof(SqlSugarRepository<>));
 builder.Services.AddAssemblyDependency(typeof(IAccountAppService), typeof(UserCommandHandler), typeof(UserRepository));

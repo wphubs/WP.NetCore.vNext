@@ -8,6 +8,11 @@ namespace WP.User.Domain.Interfaces
 {
     public interface IUserRepository
     {
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
         Task<SysUser> GetUserInfo(string account);
     }
 }

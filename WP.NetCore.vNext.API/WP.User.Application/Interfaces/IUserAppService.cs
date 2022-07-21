@@ -2,6 +2,6 @@
 
 public interface IUserAppService
 {
-    Task CreateUserAsync(UserCreateOrUpdate userCreateOrUpdate);
+    Task CreateUserAsync(UserCreateOrUpdateDto userCreateOrUpdate);
 
 }

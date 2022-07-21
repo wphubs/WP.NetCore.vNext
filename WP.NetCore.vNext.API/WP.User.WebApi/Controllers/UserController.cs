@@ -19,7 +19,7 @@ public class UserController : ApiController
     /// <param name="userCreateOrUpdate"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Post(UserCreateOrUpdate userCreateOrUpdate)
+    public async Task<IActionResult> Post(UserCreateOrUpdateDto userCreateOrUpdate)
     {
         await userAppService.CreateUserAsync(userCreateOrUpdate);
         return CustomResponse();
