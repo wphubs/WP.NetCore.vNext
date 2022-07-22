@@ -11,7 +11,7 @@ namespace WP.Infrastructures.EventBus.InMemory
     public abstract class Message : IRequest<bool>
     {
         public string MessageType { get; protected set; }
-        public Guid AggregateId { get; protected set; }
+        public long AggregateId { get; protected set; }
 
         protected Message()
         {

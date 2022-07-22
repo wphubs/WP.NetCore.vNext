@@ -30,8 +30,11 @@ namespace WP.Infrastructures.EventBus.InMemory
             ValidationResult = new ValidationResult();
 
         }
-        //将领域命令中的验证错误信息收集
-        //目前用的是缓存方法（以后通过领域通知替换）
+
+        /// <summary>
+        /// 发布领域验证错误事件
+        /// </summary>
+        /// <param name="message"></param>
         protected void NotifyValidationErrors(Command message)
         {
             foreach (var error in message.ValidationResult.Errors)
@@ -40,6 +43,27 @@ namespace WP.Infrastructures.EventBus.InMemory
                 _bus.RaiseEvent(new DomainNotification("", error.ErrorMessage));
             }
         }
+
+        /// <summary>
+        /// 发布领域错误事件
+        /// </summary>
+        /// <param name="error"></param>
+        protected void NotifyValidationErrors(string error)
+        {
+            _bus.RaiseEvent(new DomainNotification("", error));
+        }
+
+
+        /// <summary>
+        /// 发布领域事件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="event"></param>
+        protected void NotifyDomainEvent<T>(T @event) where T : Event
+        {
+            _bus.RaiseEvent(@event);
+        }
+
         //工作单元提交
         //如果有错误，下一步会在这里添加领域通知
         public bool Commit()

@@ -20,12 +20,12 @@ namespace WP.Infrastructures.EventBus.InMemory
         // 事件仓储服务
         private readonly IEventStoreService _eventStoreService;
 
-        //IEventStoreService eventStoreService
-        public InMemoryBus(IMediator mediator, ServiceFactory serviceFactory)
+        //
+        public InMemoryBus(IMediator mediator, ServiceFactory serviceFactory, IEventStoreService eventStoreService)
         {
             _mediator = mediator;
             _serviceFactory = serviceFactory;
-            //_eventStoreService = eventStoreService;
+            _eventStoreService = eventStoreService;
         }
 
         /// <summary>

@@ -13,6 +13,11 @@ public class AccountController : ApiController
         this.accountAppService = accountAppService;
     }
 
+    /// <summary>
+    /// 用户登录
+    /// </summary>
+    /// <param name="loginUser"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Post(UserLoginDto loginUser)
     {

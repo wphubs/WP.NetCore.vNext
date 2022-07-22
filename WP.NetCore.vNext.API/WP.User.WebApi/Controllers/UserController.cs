@@ -19,9 +19,22 @@ public class UserController : ApiController
     /// <param name="userCreateOrUpdate"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Post(UserCreateOrUpdateDto userCreateOrUpdate)
+    public async Task<IActionResult> Post([FromBody] UserCreateOrUpdateDto userCreateOrUpdate)
     {
         await userAppService.CreateUserAsync(userCreateOrUpdate);
+        return CustomResponse();
+    }
+
+
+    /// <summary>
+    /// 删除用户
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromQuery] long id)
+    {
+        await userAppService.RemoveUserAsync(id);
         return CustomResponse();
     }
 }

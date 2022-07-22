@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace WP.Infrastructures.EventBus.InMemory
 {
+
+    [SugarTable("SysStored")]
     public class StoredEvent : Event
     {
         /// <summary>
@@ -16,16 +19,20 @@ namespace WP.Infrastructures.EventBus.InMemory
         /// <param name="user"></param>
         public StoredEvent(Event theEvent, string data, string user)
         {
-            Id = Guid.NewGuid();
+            Id = Core.IdGenerater.GetNextId();
             AggregateId = theEvent.AggregateId;
             MessageType = theEvent.MessageType;
             Data = data;
             User = user;
         }
 
+        public StoredEvent()
+        {
+
+        }
     
         // 事件存储Id
-        public Guid Id { get; private set; }
+        public long Id { get; private set; }
         // 存储的数据
         public string Data { get; private set; }
         // 用户信息

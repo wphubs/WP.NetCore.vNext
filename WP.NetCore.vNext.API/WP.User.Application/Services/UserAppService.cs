@@ -20,5 +20,16 @@
         {
            await Bus.SendCommand(new CreateUserCommand(userCreateOrUpdate.account, userCreateOrUpdate.password));
         }
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task RemoveUserAsync(long id)
+        {
+            await Bus.SendCommand(new RemoveUserCommand(id));
+        }
+
     }
 }

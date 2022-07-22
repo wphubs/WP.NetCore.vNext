@@ -3,6 +3,14 @@ namespace WP.User.Domain.Commands.Validations;
 
 public class UserValidation<T> : AbstractValidator<T> where T : UserCommand
 {
+
+    protected void ValidateId()
+    {
+        RuleFor(c => c.Id)
+            .NotEmpty().WithMessage("Id不能为空");
+    }
+
+
     protected void ValidateAccount()
     {
         RuleFor(c => c.Account)

@@ -11,6 +11,9 @@ using Newtonsoft.Json.Serialization;
 using WP.Infrastructures.JwtBearer;
 using WP.User.Infrastruct;
 using WP.Shared.WebApi;
+using WP.Infrastructures.EventBus.InMemory.Events;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -29,17 +32,47 @@ IConfiguration Configuration = new ConfigurationBuilder()
 .AddEnvironmentVariables()
 .Build();
 
+builder.Services.AddSingleton(new Appsettings(builder.Environment.ContentRootPath));
 
 JWTSettingsOptions option = Configuration.GetSection("JWTSettings").Get<JWTSettingsOptions>();
 
-
-builder.Services.AddSingleton(new Appsettings(builder.Environment.ContentRootPath));
+var APIName = Appsettings.Get("APIName");
+var basePath = AppContext.BaseDirectory;
 builder.Services.AddJwtAuthentication();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(
+    c =>
+    {
+        typeof(ApiVersions).GetEnumNames().ToList().ForEach(version =>
+        {
+            c.SwaggerDoc(version, new OpenApiInfo
+            {
+                Version = version,
+                Title = $"{APIName}接口文档",
+                Description = $"{APIName} HTTP API {version}",
+            });
+            c.OrderActionsBy(o => o.RelativePath);
+        });
+
+        var xmlPath = Path.Combine(basePath, "WP.User.WebApi.xml");
+        c.IncludeXmlComments(xmlPath, true);
+        // 开启加权小锁
+        c.OperationFilter<AddResponseHeadersFilter>();
+        c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+        // 在header中添加token，传递到后台
+        c.OperationFilter<SecurityRequirementsOperationFilter>();
+        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Description = "JWT授权 直接在下框中输入Bearer {token}",
+            Name = "Authorization",//jwt默认的参数名称
+            In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
+            Type = SecuritySchemeType.ApiKey
+        });
+    });
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddScoped<IMediatorHandler, InMemoryBus>();
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+builder.Services.AddScoped<IEventStoreService, SqlEventStore>();
 IdGenerater.SetWorkerId(Appsettings.Get("WorkerId"));
 builder.Services.AddSqlsugarSetup(new List<Type>() { typeof(SysUser), typeof(StoredEvent) });
 builder.Services.AddScoped<ISqlSugarRepository, SqlSugarRepository>();

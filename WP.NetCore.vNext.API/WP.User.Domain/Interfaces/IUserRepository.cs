@@ -13,6 +13,14 @@ namespace WP.User.Domain.Interfaces
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        Task<SysUser> GetUserInfo(string account);
+        Task<SysUser> GetAsync(string account);
+
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task RemoveAsync(long id);
     }
 }
