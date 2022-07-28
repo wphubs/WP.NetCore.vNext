@@ -39,6 +39,43 @@ public class JWTEncryption
         return Encrypt(JWTSettings.IssuerSigningKey, Payload, JWTSettings.Algorithm);
     }
 
+
+    public static TokenModelJwt TokenInfo(ClaimsPrincipal user)
+    {
+        TokenModelJwt userBasicInfo = new TokenModelJwt();
+        IEnumerable<Claim> claims = user.Claims;
+        if (claims != null)
+        {
+            PropertyInfo[] infos = userBasicInfo.GetType().GetProperties();
+            foreach (var info in infos)
+            {
+                Claim claim = user.Claims.FirstOrDefault(it => it.Type == info.Name);
+
+                if (claim != null)
+                {
+                    if (info.PropertyType == typeof(int))
+                    {
+                        int _val = int.Parse(claim.Value == "" ? "0" : claim.Value);
+                        info.SetValue(userBasicInfo, _val);
+                    }
+                    else if (info.PropertyType == typeof(long))
+                    {
+                        var _val = Convert.ToInt64(claim.Value == "" ? "0" : claim.Value);
+                        info.SetValue(userBasicInfo, _val);
+                    }
+
+                    else
+                    {
+                        info.SetValue(userBasicInfo, claim.Value);
+                    }
+                }
+            }
+        }
+        return userBasicInfo;
+    }
+
+
+
     /// <summary>
     /// 生成 Token
     /// </summary>

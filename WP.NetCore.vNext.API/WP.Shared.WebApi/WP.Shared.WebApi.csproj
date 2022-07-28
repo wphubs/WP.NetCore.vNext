@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WP.Infrastructures.Core\WP.Infrastructures.Core.csproj" />
     <ProjectReference Include="..\WP.Infrastructures.EventBus\WP.Infrastructures.EventBus.csproj" />
+    <ProjectReference Include="..\WP.Infrastructures.JwtBearer\WP.Infrastructures.JwtBearer.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,5 +10,5 @@ public class UserLoginDto
     /// <summary>
     /// 密码
     /// </summary>
-    public string Password { get; set; } = "670b14728ad9902aecba32e22fa4f6bd";
+    public string Password { get; set; }
 }

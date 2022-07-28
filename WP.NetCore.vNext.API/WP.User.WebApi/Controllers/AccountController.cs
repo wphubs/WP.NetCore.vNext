@@ -2,15 +2,17 @@
 
 namespace WP.User.WebApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/Account")]
 [ApiController]
 public class AccountController : ApiController
 {
     private readonly IAccountAppService accountAppService;
+    private readonly IUserAppService userAppService;
 
-    public AccountController(IAccountAppService accountAppService, INotificationHandler<DomainNotification> notifications):base(notifications)
+    public AccountController(IAccountAppService accountAppService, IUserAppService userAppService, INotificationHandler<DomainNotification> notifications):base(notifications)
     {
         this.accountAppService = accountAppService;
+        this.userAppService = userAppService;
     }
 
     /// <summary>
@@ -26,11 +28,11 @@ public class AccountController : ApiController
         var result=await accountAppService.UserAccountAsync(loginUser);
         if (result)
         {
-            var userInfo = await accountAppService.GetUserInfo(loginUser.Account);
+            var userInfo = await userAppService.GetUserInfo(loginUser.Account);
             var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>()
             {
-                { "UserId", userInfo.Id },  
-                { "Account", userInfo.Account  },
+                { "Id", userInfo.Id },  
+                { "UserName", userInfo.Account  },
                 { "Name", userInfo.Name  },
             });
             var refreshToken = JWTEncryption.GenerateRefreshToken(accessToken);

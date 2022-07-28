@@ -3,6 +3,9 @@
 public interface IUserAppService
 {
 
+
+    Task<UserInfoDto> GetUserInfo(string account);
+
     /// <summary>
     /// 删除用户
     /// </summary>

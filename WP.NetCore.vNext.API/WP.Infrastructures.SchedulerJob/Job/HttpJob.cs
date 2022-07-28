@@ -31,7 +31,7 @@ namespace WP.Infrastructures.SchedulerJob
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(JobConstant.RequestType));
             HttpResponseMessage response = new HttpResponseMessage();
             switch (requestType)
-            {
+           {
                 case RequestTypeEnum.Get:
                     response = await httpHelper.GetAsync(requestUrl, headers);
                     break;

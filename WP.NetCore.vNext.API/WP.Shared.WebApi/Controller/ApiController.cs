@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WP.Infrastructures.EventBus.InMemory;
+using WP.Infrastructures.JwtBearer;
 
 namespace WP.Shared.WebApi.Controller
 {
@@ -12,6 +13,15 @@ namespace WP.Shared.WebApi.Controller
         {
             this.notifications = (DomainNotificationHandler)notifications;
         }
+
+
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        protected TokenModelJwt GetToken()
+        {
+            return JWTEncryption.TokenInfo(User);
+        }
+
 
         protected ActionResult CustomResponse(object result = null)
         {

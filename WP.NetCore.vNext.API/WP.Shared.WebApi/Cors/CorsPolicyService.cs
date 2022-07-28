@@ -12,6 +12,7 @@ namespace WP.Shared.WebApi
     {
         public static void AddCorsPolicy(this IServiceCollection services)
         {
+            var aa = Appsettings.Get("CorsAccessorSettings", "WithOrigins");
             services.AddCors(options =>
             {
                 // 配置策略

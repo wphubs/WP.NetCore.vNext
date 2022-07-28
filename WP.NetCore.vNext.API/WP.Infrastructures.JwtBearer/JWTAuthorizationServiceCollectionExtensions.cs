@@ -56,8 +56,8 @@ public static class JWTAuthorizationServiceCollectionExtensions
                      {
                          var userContext = context.HttpContext.RequestServices.GetService<IUserContext>();
                          var claims = context.Principal.Claims;
-                         userContext.Id = long.Parse(claims.First(x => x.Type == "Id").Value);
-                         userContext.Name = claims.First(x => x.Type == "Name").Value;
+                         //userContext.Id = long.Parse(claims.First(x => x.Type == "Id").Value);
+                         //userContext.Name = claims.First(x => x.Type == "Name").Value;
                          return Task.CompletedTask;
                      },
                      OnAuthenticationFailed = context =>

@@ -17,11 +17,5 @@ public class AccountAppService : IAccountAppService
         return await Bus.SendCommand(new UserLoginCommand(userLoginDto.Account, userLoginDto.Password));
     }
 
-    public async Task<UserInfoDto> GetUserInfo(string account)
-    {
-        //await Bus.RaiseEvent(new DomainNotification("", "该Name已经被使用！"));
-        var objUser = await userRepository.GetAsync(account);
-        var userInfo = objUser.Adapt<UserInfoDto>();
-        return userInfo; 
-    }
+  
 }

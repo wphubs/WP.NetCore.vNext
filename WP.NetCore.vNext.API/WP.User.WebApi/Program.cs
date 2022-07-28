@@ -70,6 +70,7 @@ builder.Services.AddSwaggerGen(
         });
     });
 builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddCorsPolicy();
 builder.Services.AddScoped<IMediatorHandler, InMemoryBus>();
 builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 builder.Services.AddScoped<IEventStoreService, SqlEventStore>();
@@ -84,6 +85,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors(Appsettings.Get("CorsAccessorSettings", "PolicyName"));
 // 开启认证
 app.UseAuthentication();
 // 开启授权中间件

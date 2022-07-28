@@ -25,6 +25,19 @@ public class UserController : ApiController
         return CustomResponse();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("GetUserInfo")]
+    public async Task<IActionResult> GetUserInfo()
+    {
+        var token = GetToken();
+        var userInfo = await userAppService.GetUserInfo(token.UserName);
+        return CustomResponse(userInfo);
+    }
+
+
 
     /// <summary>
     /// 删除用户
