@@ -4,7 +4,19 @@ public interface IUserAppService
 {
 
 
-    Task<UserInfoDto> GetUserInfo(string account);
+    /// <summary>
+    /// 获取用户列表
+    /// </summary>
+    /// <param name="account"></param>
+    /// <returns></returns>
+    Task<List<UserInfoVM>> GetUserListAsync();
+
+    /// <summary>
+    /// 获取用户信息
+    /// </summary>
+    /// <param name="account"></param>
+    /// <returns></returns>
+    Task<UserInfoVM> GetUserInfoAsync(string account);
 
     /// <summary>
     /// 删除用户

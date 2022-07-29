@@ -8,12 +8,15 @@ namespace WP.User.Domain.Interfaces
 {
     public interface IUserRepository
     {
+
+        Task<List<SysUser>> GetUserListAsync();
+
         /// <summary>
         /// 获取用户信息
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        Task<SysUser> GetAsync(string account);
+        Task<SysUser> GetUserInfoAsync(string account);
 
 
         /// <summary>
@@ -21,6 +24,6 @@ namespace WP.User.Domain.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task RemoveAsync(long id);
+        Task RemoveUserAsync(long id);
     }
 }

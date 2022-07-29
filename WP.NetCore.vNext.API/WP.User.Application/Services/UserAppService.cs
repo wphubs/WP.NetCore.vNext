@@ -12,10 +12,20 @@
             this.userRepository = userRepository;
         }
 
-        public async Task<UserInfoDto> GetUserInfo(string account)
+
+        public async Task<List<UserInfoVM>> GetUserListAsync()
         {
-            var objUser = await userRepository.GetAsync(account);
-            var userInfo = objUser.Adapt<UserInfoDto>();
+           var listUser= await userRepository.GetUserListAsync();
+            var userInfo = listUser.Adapt<List<UserInfoVM>>();
+            return userInfo;
+
+
+        }
+
+        public async Task<UserInfoVM> GetUserInfoAsync(string account)
+        {
+            var objUser = await userRepository.GetUserInfoAsync(account);
+            var userInfo = objUser.Adapt<UserInfoVM>();
             return userInfo;
         }
 

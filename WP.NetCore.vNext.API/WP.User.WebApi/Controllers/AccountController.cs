@@ -28,7 +28,7 @@ public class AccountController : ApiController
         var result=await accountAppService.UserAccountAsync(loginUser);
         if (result)
         {
-            var userInfo = await userAppService.GetUserInfo(loginUser.Account);
+            var userInfo = await userAppService.GetUserInfoAsync(loginUser.Account);
             var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>()
             {
                 { "Id", userInfo.Id },  

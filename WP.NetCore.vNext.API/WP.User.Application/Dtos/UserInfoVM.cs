@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WP.User.Application.Dtos
 {
-    public class UserInfoDto
+    public class UserInfoVM
     {
 
         public long Id { get; set; }

@@ -40,7 +40,7 @@ namespace WP.User.Domain
                 NotifyValidationErrors("用户信息不存在");
                 return await Task.FromResult(false);
             }
-            await userRepository.RemoveAsync(request.Id);
+            await userRepository.RemoveUserAsync(request.Id);
 
             return await Task.FromResult(true);
         }

@@ -23,13 +23,22 @@ namespace WP.User.Infrastruct
             this.userRepository = userRepository;
         }
 
+        /// <summary>
+        /// 获取用户列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<SysUser>> GetUserListAsync()
+        {
+            return await userRepository.ToListAsync();
+        }
+
 
         /// <summary>
         /// 删除用户
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task RemoveAsync(long id)
+        public async Task RemoveUserAsync(long id)
         {
              await sqlSugarClient.Updateable<SysUser>().SetColumns(x => x.IsDeleted == true).Where(x=>x.Id==id).ExecuteCommandAsync();
         }
@@ -39,7 +48,7 @@ namespace WP.User.Infrastruct
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        public async Task<SysUser> GetAsync(string account)
+        public async Task<SysUser> GetUserInfoAsync(string account)
         {
             return await userRepository.FirstOrDefaultAsync(x => x.Account == account);
         }

@@ -13,6 +13,19 @@ public class UserController : ApiController
         this.userAppService = userAppService;
     }
 
+
+    /// <summary>
+    /// 获取用户列表
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var listUser=await userAppService.GetUserListAsync();
+        return CustomResponse(listUser);
+    }
+
+
     /// <summary>
     /// 创建用户
     /// </summary>
@@ -33,7 +46,7 @@ public class UserController : ApiController
     public async Task<IActionResult> GetUserInfo()
     {
         var token = GetToken();
-        var userInfo = await userAppService.GetUserInfo(token.UserName);
+        var userInfo = await userAppService.GetUserInfoAsync(token.UserName);
         return CustomResponse(userInfo);
     }
 
