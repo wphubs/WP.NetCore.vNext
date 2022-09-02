@@ -37,3 +37,16 @@ export interface GetUserInfoModel {
   // 介绍
   desc?: string;
 }
+
+export interface SysUserModel {
+  id: string;
+  account: string;
+  avatar: string;
+  deptId: string;
+  name: string;
+  sex: number;
+  createBy: string;
+  createTime: string;
+  modifyBy: string;
+  modifyTime: string;
+}

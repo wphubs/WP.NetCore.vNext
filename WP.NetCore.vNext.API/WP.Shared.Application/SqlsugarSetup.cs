@@ -63,16 +63,16 @@ namespace WP.Shared.Application
                 };
 
 
-                if (Appsettings.Get("SeedData").ToBool())
-                {
-                    sqlSugar.DbMaintenance.CreateDatabase();
-                    foreach (Type item in types)
-                    {
-                        Type[] t = item.Assembly.GetTypes().Where(it => it.FullName.Contains("Entities.")|| it.FullName.Contains("StoredEvent")).ToArray();
-                        sqlSugar.CodeFirst.SetStringDefaultLength(255).InitTables(t);
-                    }
+                //if (Appsettings.Get("SeedData").ToBool())
+                //{
+                //    sqlSugar.DbMaintenance.CreateDatabase();
+                //    foreach (Type item in types)
+                //    {
+                //        Type[] t = item.Assembly.GetTypes().Where(it => it.FullName.Contains("Entities.")|| it.FullName.Contains("StoredEvent")).ToArray();
+                //        sqlSugar.CodeFirst.SetStringDefaultLength(255).InitTables(t);
+                //    }
             
-                }
+                //}
             });
 
 

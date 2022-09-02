@@ -10,7 +10,7 @@ namespace WP.Infrastructures.SqlSugar
     public abstract class AuditInfo : Entity, IAuditInfo
     {
 
-        [SugarColumn(DefaultValue = "1")]
+        [SugarColumn(DefaultValue = "0")]
         public bool IsDeleted { get; set; }
 
         /// <summary>

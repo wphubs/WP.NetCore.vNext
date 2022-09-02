@@ -10,7 +10,8 @@ const user: AppRouteModule = {
   meta: {
     hideChildrenInMenu: true,
     icon: 'simple-icons:about-dot-me',
-    title: t('routes.dashboard.about'),
+    title: t('routes.user.user'),
+    orderNo: 3,
   },
   children: [
     {
@@ -18,7 +19,7 @@ const user: AppRouteModule = {
       name: 'UserPage',
       component: () => import('/@/views/user/index.vue'),
       meta: {
-        title: t('routes.dashboard.about'),
+        title: t('routes.user.user'),
         icon: 'simple-icons:about-dot-me',
       },
     },

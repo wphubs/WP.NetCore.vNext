@@ -32,7 +32,7 @@ public class AccountController : ApiController
             var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>()
             {
                 { "Id", userInfo.Id },  
-                { "UserName", userInfo.Account  },
+                { "Account", userInfo.Account  },
                 { "Name", userInfo.Name  },
             });
             var refreshToken = JWTEncryption.GenerateRefreshToken(accessToken);

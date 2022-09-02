@@ -10,15 +10,18 @@ namespace WP.Infrastructures.JwtBearer
     {
         public long Id { get; set; }
 
+        /// <summary>
+        /// 姓名
+        /// </summary>
         public string Name { get; set; }
         /// <summary>
         /// 角色
         /// </summary>
         public string Role { get; set; }
         /// <summary>
-        /// 职能
+        /// 帐号
         /// </summary>
-        public string UserName { get; set; }
+        public string Account { get; set; }
 
         /// <summary>
         /// 头像

@@ -46,7 +46,7 @@ public class UserController : ApiController
     public async Task<IActionResult> GetUserInfo()
     {
         var token = GetToken();
-        var userInfo = await userAppService.GetUserInfoAsync(token.UserName);
+        var userInfo = await userAppService.GetUserInfoAsync(token.Account);
         return CustomResponse(userInfo);
     }
 

@@ -1,19 +1,55 @@
 <template>
-  <PageWrapper title="关于">
-    <template #headerContent>
-      <div class="flex justify-between items-center">
-        <span class="flex-1">
-          是一个基于Vue3.0、Vite、 Ant-Design-Vue 、TypeScript
-          的后台解决方案，目标是为中大型项目开发,提供现成的开箱解决方案及丰富的示例,原则上不会限制任何代码用于商用。
-        </span>
-      </div>
-    </template>
-  </PageWrapper>
+  <div class="p-4">
+    <a-button type="primary" @click="openModal">Primary Button</a-button>
+
+    <BasicTable @register="registerTable">
+      <template #avatar="{ text: tags }">
+        <a-avatar :src="tags" />
+      </template>
+    </BasicTable>
+    <UserModal @register="registerUserModal"></UserModal>
+    {{ list }}
+  </div>
 </template>
-<script lang="ts" setup>
-  import { h } from 'vue';
-  import { Tag } from 'ant-design-vue';
-  import { PageWrapper } from '/@/components/Page';
-  import { Description, DescItem, useDescription } from '/@/components/Description/index';
-  import { GITHUB_URL, SITE_URL, DOC_URL } from '/@/settings/siteSetting';
+<script lang="ts">
+  import { defineComponent, ref, reactive, onMounted } from 'vue';
+  import { BasicTable, useTable } from '/@/components/Table';
+  import { getUserBasicColumns } from './tableData';
+  import { getUserList } from '/@/api/sys/user';
+  import { SysUserModel } from '/@/api/sys/model/userModel';
+  import UserModal from './components/UserModal.vue';
+  import { useModal } from '/@/components/Modal';
+  export default defineComponent({
+    components: { BasicTable,UserModal },
+    methods: {
+      clickAdd() {
+        console.log('clickAdd');
+      },
+    },
+    setup() {
+      const list: any = reactive({ data: [] });
+      onMounted(async () => {
+        list.data = await getUserList();
+        console.log('onMounted:' + JSON.stringify(list));
+      });
+      const [registerTable, { setLoading }] = useTable({
+        api: getUserList,
+        columns: getUserBasicColumns(),
+      });
+      const [registerUserModal, { openModal,setModalProps }] = useModal();
+      function changeLoading() {
+        setLoading(true);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      }
+      return {
+        registerUserModal,
+        openModal,
+        list,
+        registerTable,
+        changeLoading,
+      };
+    },
+  });
 </script>

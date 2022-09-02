@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WP.Infrastructures.SqlSugar;
 
 namespace WP.User.Application.Dtos
 {
-    public class UserInfoVM
+    public class UserInfoVM : AuditInfo
     {
 
         public long Id { get; set; }
@@ -20,6 +21,10 @@ namespace WP.User.Application.Dtos
         public string Name { get; set; }
 
         public int? Sex { get; set; }
+
+     
+
+
 
     }
 }
