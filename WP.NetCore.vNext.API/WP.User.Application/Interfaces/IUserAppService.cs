@@ -1,4 +1,6 @@
-﻿namespace WP.User.Application.Interfaces;
+﻿using WP.Infrastructures.SqlSugar;
+
+namespace WP.User.Application.Interfaces;
 
 public interface IUserAppService
 {
@@ -9,7 +11,7 @@ public interface IUserAppService
     /// </summary>
     /// <param name="account"></param>
     /// <returns></returns>
-    Task<List<UserInfoVM>> GetUserListAsync();
+    Task<SqlSugarPagedList<UserInfoVM>> GetUserListAsync(int pageIndex, int pageSize);
 
     /// <summary>
     /// 获取用户信息
@@ -24,6 +26,16 @@ public interface IUserAppService
     /// <param name="id"></param>
     /// <returns></returns>
     Task RemoveUserAsync(long id);
+
+
+    /// <summary>
+    /// 修改用户
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task UpdateUserAsync(UserCreateOrUpdateDto userCreateOrUpdate);
+
+
 
 
     /// <summary>

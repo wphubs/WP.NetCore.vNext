@@ -9,7 +9,7 @@ namespace WP.User.Domain.Interfaces
     public interface IUserRepository
     {
 
-        Task<List<SysUser>> GetUserListAsync();
+        Task<SqlSugarPagedList<SysUser>> GetUserListAsync(int pageIndex, int pageSize);
 
         /// <summary>
         /// 获取用户信息

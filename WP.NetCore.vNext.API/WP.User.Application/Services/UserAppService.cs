@@ -1,4 +1,6 @@
-﻿namespace WP.User.Application.Services
+﻿using WP.Infrastructures.SqlSugar;
+
+namespace WP.User.Application.Services
 {
     [UseDependencyInjection]
     public class UserAppService : IUserAppService
@@ -13,10 +15,10 @@
         }
 
 
-        public async Task<List<UserInfoVM>> GetUserListAsync()
+        public async Task<SqlSugarPagedList<UserInfoVM>> GetUserListAsync(int pageIndex, int pageSize)
         {
-           var listUser= await userRepository.GetUserListAsync();
-            var userInfo = listUser.Adapt<List<UserInfoVM>>();
+           var listUser= await userRepository.GetUserListAsync(pageIndex, pageSize);
+            var userInfo = listUser.Adapt<SqlSugarPagedList<UserInfoVM>>();
             return userInfo;
 
 
@@ -37,8 +39,21 @@
         /// <returns></returns>
         public async Task CreateUserAsync(UserCreateOrUpdateDto userCreateOrUpdate)
         {
-           await Bus.SendCommand(new CreateUserCommand(userCreateOrUpdate.account, userCreateOrUpdate.password));
+           await Bus.SendCommand(new CreateUserCommand(userCreateOrUpdate.account, userCreateOrUpdate.password,userCreateOrUpdate.name,userCreateOrUpdate.sex));
         }
+
+
+        /// <summary>
+        /// 修改用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task UpdateUserAsync(UserCreateOrUpdateDto userCreateOrUpdate)
+        {
+
+            await Bus.SendCommand(new CreateUserCommand(userCreateOrUpdate.account, userCreateOrUpdate.password, userCreateOrUpdate.name, userCreateOrUpdate.sex));
+        }
+
 
         /// <summary>
         /// 删除用户

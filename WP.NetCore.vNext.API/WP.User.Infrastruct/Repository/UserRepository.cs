@@ -27,9 +27,9 @@ namespace WP.User.Infrastruct
         /// 获取用户列表
         /// </summary>
         /// <returns></returns>
-        public async Task<List<SysUser>> GetUserListAsync()
+        public async Task<SqlSugarPagedList<SysUser>> GetUserListAsync(int page, int size)
         {
-            return await userRepository.ToListAsync();
+           return await sqlSugarClient.Queryable<SysUser>().ToPagedListAsync(page,size) ;
         }
 
 

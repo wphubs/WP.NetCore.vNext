@@ -30,7 +30,7 @@ namespace WP.Shared.WebApi.Controller
             {
                 return BadRequest(domainNotifications);
             }
-            return Ok(result);
+            return Ok(result==null?"成功":result);
        
         }
 

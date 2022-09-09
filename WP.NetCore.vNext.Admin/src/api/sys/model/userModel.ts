@@ -50,3 +50,10 @@ export interface SysUserModel {
   modifyBy: string;
   modifyTime: string;
 }
+
+export interface SysUserCreateOrUpdateModel {
+  account: string;
+  deptId: string;
+  name: string;
+  sex: number;
+}

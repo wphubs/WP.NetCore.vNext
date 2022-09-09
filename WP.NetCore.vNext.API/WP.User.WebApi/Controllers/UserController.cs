@@ -19,9 +19,9 @@ public class UserController : ApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery]int pageIndex, [FromQuery] int pageSize)
     {
-        var listUser=await userAppService.GetUserListAsync();
+        var listUser=await userAppService.GetUserListAsync(pageIndex, pageSize);
         return CustomResponse(listUser);
     }
 
@@ -57,8 +57,8 @@ public class UserController : ApiController
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] long id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] long id)
     {
         await userAppService.RemoveUserAsync(id);
         return CustomResponse();
