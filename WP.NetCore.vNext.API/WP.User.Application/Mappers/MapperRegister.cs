@@ -1,4 +1,6 @@
-﻿namespace WP.User.Application.Mappers;
+﻿
+namespace WP.User.Application.Mappers;
+
 public class MapperRegister : IRegister
 {
 

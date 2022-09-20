@@ -1,7 +1,7 @@
-﻿global using WP.Infrastructures.Core;
-global using WP.Infrastructures.EventBus.InMemory;
-global using WP.User.Application.Dtos;
-global using WP.User.Application.Interfaces;
-global using WP.User.Domain.Commands;
+﻿global using WP.Infrastructures.SqlSugar;
+global using WP.User.Repository.Entities;
+global using WP.Infrastructures.Core;
+global using WP.User.Application.Contracts.Dtos.User;
+global using WP.Shared.Application;
+global using WP.User.Application.Contracts.Services;
 global using Mapster;
-global using WP.User.Domain.Interfaces;

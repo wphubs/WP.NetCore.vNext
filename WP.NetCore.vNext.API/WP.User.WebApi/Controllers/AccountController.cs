@@ -1,5 +1,8 @@
 ﻿using WP.Infrastructures.JwtBearer;
-
+using WP.Shared.WebApi.Controller;
+using WP.User.Application.Contracts.Dtos.User;
+using WP.User.Application.Contracts.Services;
+using WP.Shared.Application.Contracts;
 namespace WP.User.WebApi.Controllers;
 
 [Route("api/Account")]
@@ -7,12 +10,10 @@ namespace WP.User.WebApi.Controllers;
 public class AccountController : ApiController
 {
     private readonly IAccountAppService accountAppService;
-    private readonly IUserAppService userAppService;
 
-    public AccountController(IAccountAppService accountAppService, IUserAppService userAppService, INotificationHandler<DomainNotification> notifications):base(notifications)
+    public AccountController(IAccountAppService accountAppService)
     {
         this.accountAppService = accountAppService;
-        this.userAppService = userAppService;
     }
 
     /// <summary>
@@ -21,28 +22,12 @@ public class AccountController : ApiController
     /// <param name="loginUser"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Post(UserLoginDto loginUser)
+    public async Task<ActionResult<UserTokenInfoDto>> Post(UserLoginDto loginUser)
     {
         loginUser.Account = "admin";
         loginUser.Password = "670b14728ad9902aecba32e22fa4f6bd";
-        var result=await accountAppService.UserAccountAsync(loginUser);
-        if (result)
-        {
-            var userInfo = await userAppService.GetUserInfoAsync(loginUser.Account);
-            var accessToken = JWTEncryption.Encrypt(new Dictionary<string, object>()
-            {
-                { "Id", userInfo.Id },  
-                { "Account", userInfo.Account  },
-                { "Name", userInfo.Name  },
-            });
-            var refreshToken = JWTEncryption.GenerateRefreshToken(accessToken);
-            return CustomResponse(new UserTokenInfoDto() {Token= accessToken, RefreshToken = refreshToken });
-        }
-        else
-        {
-            return CustomResponse();
-        }
-       
+        return Result(await accountAppService.UserAccountAsync(loginUser));
+
     }
 
 }

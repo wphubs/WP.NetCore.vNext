@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WP.Infrastructures.JwtBearer\WP.Infrastructures.JwtBearer.csproj" />
     <ProjectReference Include="..\WP.Shared.Application\WP.Shared.Application.csproj" />
-    <ProjectReference Include="..\WP.User.Domain\WP.User.Domain.csproj" />
+    <ProjectReference Include="..\WP.User.Application.Contracts\WP.User.Application.Contracts.csproj" />
+    <ProjectReference Include="..\WP.User.Repository\WP.User.Repository.csproj" />
   </ItemGroup>
 
 </Project>
