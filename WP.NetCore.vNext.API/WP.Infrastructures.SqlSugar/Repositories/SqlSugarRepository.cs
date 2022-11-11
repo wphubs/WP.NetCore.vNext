@@ -60,7 +60,7 @@ public partial class SqlSugarRepository : ISqlSugarRepository
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
 public partial class SqlSugarRepository<TEntity> : ISqlSugarRepository<TEntity>
-where TEntity : class, new()
+where TEntity : AuditInfo, new()
 {
     /// <summary>
     /// 非泛型 SqlSugar 仓储
@@ -410,6 +410,7 @@ where TEntity : class, new()
         return _sqlSugarRepository.Context.Deleteable(entity).ExecuteCommand();
     }
 
+
     /// <summary>
     /// 删除一条记录
     /// </summary>
@@ -448,6 +449,11 @@ where TEntity : class, new()
     public virtual Task<int> DeleteAsync(TEntity entity)
     {
         return _sqlSugarRepository.Context.Deleteable(entity).ExecuteCommandAsync();
+    }
+
+    public virtual Task<int> SoltDeleteAsync(Expression<Func<TEntity, bool>> whereExpression)
+    {
+        return _sqlSugarRepository.Context.Updateable<TEntity>().UpdateColumns(x=>x.IsDeleted==true).Where(whereExpression).ExecuteCommandAsync();
     }
 
     /// <summary>

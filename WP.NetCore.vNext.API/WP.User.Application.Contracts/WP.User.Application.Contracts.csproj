@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WP.Infrastructures.Mapster\WP.Infrastructures.Mapster.csproj" />
+    <ProjectReference Include="..\WP.Infrastructures.SqlSugar\WP.Infrastructures.SqlSugar.csproj" />
     <ProjectReference Include="..\WP.Shared.Application.Contracts\WP.Shared.Application.Contracts.csproj" />
+    <ProjectReference Include="..\WP.User.Repository\WP.User.Repository.csproj" />
   </ItemGroup>
 
 </Project>

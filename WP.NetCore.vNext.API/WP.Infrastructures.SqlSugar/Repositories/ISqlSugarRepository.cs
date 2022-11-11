@@ -301,6 +301,14 @@ public partial interface ISqlSugarRepository<TEntity>
     Task<int> DeleteAsync(TEntity entity);
 
     /// <summary>
+    /// 软删除
+    /// </summary>
+    /// <param name="whereExpression"></param>
+    /// <returns></returns>
+    Task<int> SoltDeleteAsync(Expression<Func<TEntity, bool>> whereExpression);
+
+
+    /// <summary>
     /// 删除一条记录
     /// </summary>
     /// <param name="key"></param>

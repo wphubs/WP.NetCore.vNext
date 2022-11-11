@@ -1,8 +1,6 @@
-﻿using WP.Infrastructures.JwtBearer;
-using WP.Shared.WebApi.Controller;
-using WP.User.Application.Contracts.Dtos.User;
-using WP.User.Application.Contracts.Services;
-using WP.Shared.Application.Contracts;
+﻿
+
+
 namespace WP.User.WebApi.Controllers;
 
 [Route("api/Account")]

@@ -5,3 +5,4 @@ global using WP.User.Application.Contracts.Dtos.User;
 global using WP.Shared.Application;
 global using WP.User.Application.Contracts.Services;
 global using Mapster;
+global using System.Net; 

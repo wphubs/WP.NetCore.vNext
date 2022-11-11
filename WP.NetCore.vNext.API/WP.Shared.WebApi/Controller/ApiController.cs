@@ -63,6 +63,14 @@ namespace WP.Shared.WebApi.Controller
                     , problemDetails.Type);
         }
 
+        [NonAction]
+        protected virtual ActionResult<TValue> CreatedResult<TValue>(ResponseResult<TValue> appSrvResult)
+        {
+            if (appSrvResult.IsSuccess)
+                return Created(this.Request.Path, appSrvResult.Content);
+            return Problem(appSrvResult.ProblemDetails);
+        }
+
 
     }
 }

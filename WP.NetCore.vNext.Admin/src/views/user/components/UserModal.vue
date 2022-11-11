@@ -6,15 +6,15 @@
     :title="getTitle"
     :helpMessage="['新增用户']"
   >
-  <!-- :showOkBtn="false"
+    <!-- :showOkBtn="false"
   :showCancelBtn="false" -->
 
     <BasicForm @register="registerForm" />
   </BasicModal>
 </template>
 <script lang="ts">
-  import { defineComponent,ref,unref,computed } from 'vue';
-  import { createUser } from '/@/api/sys/user'
+  import { defineComponent, ref, unref, computed } from 'vue';
+  import { createUser } from '/@/api/sys/user';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form';
   import { CollapseContainer } from '/@/components/Container';
@@ -23,7 +23,7 @@
     components: { BasicModal, BasicForm, CollapseContainer },
     setup(_, { emit }) {
       const schemas: FormSchema[] = [
-      {
+        {
           field: 'name',
           component: 'Input',
           label: '姓名',
@@ -44,7 +44,6 @@
           rules: [{ required: true, message: '请填写帐号', trigger: 'blur' }],
           componentProps: {
             placeholder: '输入帐号',
-
           },
         },
         {
@@ -58,28 +57,28 @@
           },
         },
         {
-      field: 'sex',
-      component: 'Select',
-      label: '性别',
-      componentProps: {
-        // mode: 'multiple',
-        options: [
-          {
-            label: '男',
-            value:1,
-            key: 1,
+          field: 'sex',
+          component: 'Select',
+          label: '性别',
+          componentProps: {
+            // mode: 'multiple',
+            options: [
+              {
+                label: '男',
+                value: 1,
+                key: 1,
+              },
+              {
+                label: '女',
+                value: 2,
+                key: 2,
+              },
+            ],
           },
-          {
-            label: '女',
-            value: 2,
-            key: 2,
-          },
-        ],
-      },
-    },
+        },
       ];
-     
-      const [registerForm, { validate, setFieldsValue, setProps,resetFields }] = useForm({
+
+      const [registerForm, { validate, setFieldsValue, setProps, resetFields }] = useForm({
         showActionButtonGroup: false,
         labelCol: {
           span: 4,
@@ -99,7 +98,6 @@
       });
       const isUpdate = ref(true);
       const rowId = ref('');
-     
       const [register, { closeModal, setModalProps }] = useModalInner(async (data) => {
         resetFields();
         setModalProps({ confirmLoading: false });
@@ -107,18 +105,15 @@
 
         if (unref(isUpdate)) {
           // rowId.value = data.record.id;
-          console.log('data:'+JSON.stringify(data.user))
+          console.log('data:' + JSON.stringify(data.user));
           setFieldsValue({
             ...data.user,
           });
         }
-
       });
       const getTitle = computed(() => (!unref(isUpdate) ? '新增账号' : '编辑账号'));
 
       const { createMessage } = useMessage();
-    
-  
 
       async function customSubmitFunc() {
         try {
@@ -128,11 +123,11 @@
           await createUser(values);
 
           // setTimeout(() => {
-             setModalProps({ confirmLoading: false });
+          setModalProps({ confirmLoading: false });
           //   console.log(values);
           emit('success');
-            createMessage.success('提交成功！');
-             closeModal();
+          createMessage.success('提交成功！');
+          closeModal();
           // }, 2000);
         } catch (error) {
           createMessage.success('提交失败！');

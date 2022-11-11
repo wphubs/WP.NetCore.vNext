@@ -56,4 +56,5 @@ export interface SysUserCreateOrUpdateModel {
   deptId: string;
   name: string;
   sex: number;
+  Password: string;
 }
