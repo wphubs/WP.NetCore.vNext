@@ -24,7 +24,7 @@ namespace WP.User.Application.Services
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public async Task<ResponseResult<long>> CreateUserAsync(UserCreateAndUpdateDto input)
+        public async Task<ResponseResult<long>> CreateUserAsync(UserCreateDto input)
         {
             if (await userRepository.AnyAsync(x => x.Account == input.Account))
             {
@@ -39,6 +39,30 @@ namespace WP.User.Application.Services
             return objUser.Id;
         }
 
+
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ResponseResult> UpdateUserAsync(long id, UserUpdateDto input)
+        {
+            if (!await userRepository.AnyAsync(x => x.Id == id))
+            {
+                return Problem(HttpStatusCode.BadRequest, "用户信息不存在");
+            }
+            //if (await userRepository.AnyAsync(x => x.Account == input.Account))
+            //{
+            //    return Problem(HttpStatusCode.BadRequest, "账号已经存在");
+            //}
+            var objRole = input.Adapt<SysUser>();
+            objRole.Id = id;
+            await userRepository.UpdateAsync(objRole, it => new { it.Name, it.Avatar, it.Roles,it.Sex,it.Account });
+            return DefaultResult();
+        }
+
+
         /// <summary>
         /// 删除用户
         /// </summary>
@@ -51,7 +75,7 @@ namespace WP.User.Application.Services
                 return Problem(HttpStatusCode.BadRequest, "用户信息不存在");
             }
             await userRepository.SoltDeleteAsync(x=>x.Id==id);
-            return ResponseResult();
+            return DefaultResult();
 
         }
 
@@ -74,10 +98,11 @@ namespace WP.User.Application.Services
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<SqlSugarPagedList<SysUser>> GetUserListAsync(UserSearchPagedDto input)
+        public async Task<SqlSugarPagedList<UserDto>> GetUserListAsync(UserSearchPagedDto input)
         {
-           var list=await userRepository.AsQueryable().ToPagedListAsync(input.PageIndex, input.PageSize);
-           return list;
+           var userList=await userRepository.AsQueryable().Includes(role=>role.Roles).ToPagedListAsync(input.PageIndex, input.PageSize);
+           var userDto = userList.Adapt<SqlSugarPagedList<UserDto>>();
+           return userDto;
         }
     }
 }

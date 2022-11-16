@@ -1,5 +1,6 @@
 <template>
   <BasicModal
+    destroyOnClose
     @register="register"
     @ok="customSubmitFunc"
     v-bind="$attrs"
@@ -14,7 +15,7 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref, unref, computed } from 'vue';
-  import { createUser } from '/@/api/sys/user';
+  import { createUser, updateUser } from '/@/api/sys/user';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, FormSchema, useForm } from '/@/components/Form';
   import { CollapseContainer } from '/@/components/Container';
@@ -78,7 +79,10 @@
         },
       ];
 
-      const [registerForm, { validate, setFieldsValue, setProps, resetFields }] = useForm({
+      const [
+        registerForm,
+        { validate, setFieldsValue, setProps, resetFields, removeSchemaByFiled },
+      ] = useForm({
         showActionButtonGroup: false,
         labelCol: {
           span: 4,
@@ -92,7 +96,7 @@
           span: 18,
         },
         submitButtonOptions: {
-          text: '提交',
+          text: '保存',
         },
         submitFunc: customSubmitFunc,
       });
@@ -102,13 +106,12 @@
         resetFields();
         setModalProps({ confirmLoading: false });
         isUpdate.value = !!data?.isUpdate;
-
         if (unref(isUpdate)) {
-          // rowId.value = data.record.id;
-          console.log('data:' + JSON.stringify(data.user));
+          rowId.value = data.user.id;
           setFieldsValue({
             ...data.user,
           });
+          removeSchemaByFiled('password');
         }
       });
       const getTitle = computed(() => (!unref(isUpdate) ? '新增账号' : '编辑账号'));
@@ -119,18 +122,17 @@
         try {
           const values = await validate();
           setModalProps({ confirmLoading: true });
-
-          await createUser(values);
-
-          // setTimeout(() => {
+          if (!unref(isUpdate)) {
+            await createUser(values);
+          } else {
+            await updateUser(rowId.value, values);
+          }
           setModalProps({ confirmLoading: false });
-          //   console.log(values);
           emit('success');
-          createMessage.success('提交成功！');
+          createMessage.success('保存成功！');
           closeModal();
-          // }, 2000);
         } catch (error) {
-          createMessage.success('提交失败！');
+          // createMessage.error('保存失败！');
           setModalProps({ confirmLoading: false });
         }
       }

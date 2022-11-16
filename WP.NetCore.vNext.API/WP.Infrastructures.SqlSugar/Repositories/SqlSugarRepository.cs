@@ -381,6 +381,17 @@ where TEntity : AuditInfo, new()
     }
 
     /// <summary>
+    /// 更新一条记录
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public virtual Task<int> UpdateAsync(TEntity entity, Expression<Func<TEntity, object>> columns)
+    {
+        return _sqlSugarRepository.Context.Updateable(entity).UpdateColumns(columns).ExecuteCommandAsync();
+    }
+
+
+    /// <summary>
     /// 更新多条记录
     /// </summary>
     /// <param name="entities"></param>
@@ -453,7 +464,7 @@ where TEntity : AuditInfo, new()
 
     public virtual Task<int> SoltDeleteAsync(Expression<Func<TEntity, bool>> whereExpression)
     {
-        return _sqlSugarRepository.Context.Updateable<TEntity>().UpdateColumns(x=>x.IsDeleted==true).Where(whereExpression).ExecuteCommandAsync();
+        return _sqlSugarRepository.Context.Updateable<TEntity>().SetColumns(x =>x.IsDeleted==true).Where(whereExpression).ExecuteCommandAsync();
     }
 
     /// <summary>

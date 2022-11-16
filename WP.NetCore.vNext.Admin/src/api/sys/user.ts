@@ -33,7 +33,10 @@ export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') 
 }
 
 export function createUser(params: SysUserCreateOrUpdateModel) {
-  return defHttp.post<any>({ url: Api.user, params }, { errorMessageMode: 'none' });
+  return defHttp.post<any>({ url: Api.user, params });
+}
+export function updateUser(id: string, params: SysUserCreateOrUpdateModel) {
+  return defHttp.put<any>({ url: `${Api.user}/${id}`, params });
 }
 
 export function getUserList(params) {

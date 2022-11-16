@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,6 @@ namespace WP.User.Repository.Entities
 {
     public class SysRole : AuditInfo
     {
-        public long? DeptId { get; set; }
 
         public string Name { get; set; }
 
@@ -18,6 +18,10 @@ namespace WP.User.Repository.Entities
         public long? PId { get; set; }
 
         public string Desc { get; set; }
+
+
+        [Navigate(typeof(SysUserRole), nameof(SysUserRole.RoleId), nameof(SysUserRole.UserId))]//注意顺序
+        public List<SysUser> Users { get; set; }//只能是null不能赋默认值
 
     }
 }

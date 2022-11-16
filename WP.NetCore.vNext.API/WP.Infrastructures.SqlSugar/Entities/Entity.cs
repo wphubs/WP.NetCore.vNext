@@ -11,6 +11,7 @@ namespace WP.Infrastructures.SqlSugar
     {
         //[SugarColumn(IsIdentity = true, IsPrimaryKey = true)]
         [Newtonsoft.Json.JsonConverter(typeof(ValueToStringConverter))]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public long Id { get; set; }
     }
 }

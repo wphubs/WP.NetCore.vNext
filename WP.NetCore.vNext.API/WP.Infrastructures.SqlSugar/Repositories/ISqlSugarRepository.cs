@@ -252,6 +252,14 @@ public partial interface ISqlSugarRepository<TEntity>
     Task<int> UpdateAsync(TEntity entity);
 
     /// <summary>
+    /// 更新一条记录
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="columns"></param>
+    /// <returns></returns>
+    Task<int> UpdateAsync(TEntity entity, Expression<Func<TEntity, object>> columns);
+
+    /// <summary>
     /// 更新多条记录
     /// </summary>
     /// <param name="entities"></param>

@@ -7,7 +7,7 @@ using WP.Infrastructures.SqlSugar;
 
 namespace WP.User.Repository.Entities
 {
-    public class SysRelation : AuditInfo
+    public class SysMenuRole : AuditInfo
     {
         public long MenuId { get; set; }
 

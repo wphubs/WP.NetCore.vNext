@@ -1,6 +1,4 @@
 ﻿
-using WP.Shared.Application.Contracts;
-using WP.User.Application.Contracts.Dtos.User;
 
 namespace WP.User.Application.Contracts.Services
 {

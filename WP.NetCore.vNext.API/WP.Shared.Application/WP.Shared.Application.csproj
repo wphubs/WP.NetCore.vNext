@@ -14,6 +14,11 @@
     <ProjectReference Include="..\WP.Infrastructures.Core\WP.Infrastructures.Core.csproj" />
     <ProjectReference Include="..\WP.Infrastructures.Mapster\WP.Infrastructures.Mapster.csproj" />
     <ProjectReference Include="..\WP.Infrastructures.SqlSugar\WP.Infrastructures.SqlSugar.csproj" />
+    <ProjectReference Include="..\WP.Shared.Application.Contracts\WP.Shared.Application.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

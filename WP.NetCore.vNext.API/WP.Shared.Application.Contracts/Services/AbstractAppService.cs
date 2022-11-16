@@ -10,7 +10,7 @@ namespace WP.Shared.Application.Contracts
 {
     public abstract class AbstractAppService 
     {
-        protected ResponseResult ResponseResult() => new();
+        protected ResponseResult DefaultResult() => new();
 
         protected ResponseResult<TValue> AppSrvResult<TValue>([NotNull] TValue value) => new(value);
 
