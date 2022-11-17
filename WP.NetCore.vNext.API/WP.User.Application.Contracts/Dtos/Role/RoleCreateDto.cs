@@ -7,7 +7,6 @@ public class RoleCreateDto
 
     public int Sort { get; set; }
 
-    public long? PId { get; set; }
 
     public string Desc { get; set; }
 }

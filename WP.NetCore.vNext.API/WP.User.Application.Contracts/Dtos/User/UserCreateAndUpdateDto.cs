@@ -10,4 +10,6 @@ public abstract class UserCreateAndUpdateDto
 
     public int? Sex { get; set; }
 
+    public List<long> Roles { get; set; }
+
 }

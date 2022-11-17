@@ -67,7 +67,7 @@ namespace WP.User.Application.Services
 
             var objRole = input.Adapt<SysRole>();
             objRole.Id = id;
-            await roleRepository.UpdateAsync(objRole, it => new { it.Name, it.Desc, it.PId });
+            await roleRepository.UpdateAsync(objRole);
             return DefaultResult();
         }
 

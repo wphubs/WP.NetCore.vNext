@@ -2,21 +2,7 @@
   <div class="p-4">
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate">新增账号</a-button>
-      </template>
-      <template #avatar="{ text: tags }">
-        <!-- <a-avatar :src="tags" /> -->
-        <a-avatar>
-          <template #icon><UserOutlined /></template>
-        </a-avatar>
-      </template>
-      <template #sex="{ text: sex }">
-        {{ sex == 1 ? '男' : '女' }}
-      </template>
-      <template #roles="{ text: roles }">
-        <span v-for="(item, index) in roles" :key="index" class="mr-2.5">
-          <a-tag color="#108ee9">{{ item.name }}</a-tag>
-        </span>
+        <a-button type="primary" @click="handleCreate">新增角色</a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -40,30 +26,24 @@
         />
       </template>
     </BasicTable>
-    <UserModal @register="registerUserModal" @success="handleSuccess" />
+    <RoleModal @register="registerRoleModal" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts">
   import { defineComponent, ref, reactive, onMounted } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { getUserBasicColumns, getFormConfig } from './configData';
-  import { getUserList, deleteUser } from '/@/api/sys/user';
+  import { getRoleList, deleteRole } from '/@/api/sys/role';
   import { SysUserModel } from '/@/api/sys/model/userModel';
-  import UserModal from './components/UserModal.vue';
+  import RoleModal from './components/RoleModal.vue';
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { UserOutlined } from '@ant-design/icons-vue';
   export default defineComponent({
-    components: { UserOutlined, BasicTable, UserModal, TableAction },
+    components: { BasicTable, RoleModal, TableAction },
     setup() {
       const { createMessage } = useMessage();
-      // const list: any = reactive({ data: [] });
-      onMounted(async () => {
-        // list.data = await getUserList();
-        // console.log('onMounted:' + JSON.stringify(list));
-      });
       const [registerTable, { setLoading, reload, getForm }] = useTable({
-        api: getUserList,
+        api: getRoleList,
         columns: getUserBasicColumns(),
         useSearchForm: true,
         formConfig: getFormConfig(),
@@ -74,7 +54,7 @@
           slots: { customRender: 'action' },
         },
       });
-      const [registerUserModal, { openModal, setModalProps }] = useModal();
+      const [registerRoleModal, { openModal, setModalProps }] = useModal();
       function changeLoading() {
         setLoading(true);
         setTimeout(() => {
@@ -89,7 +69,7 @@
       }
 
       async function handleDelete(user: SysUserModel) {
-        await deleteUser('/' + user.id);
+        await deleteRole('/' + user.id);
         createMessage.success('删除成功');
         reload();
       }
@@ -108,7 +88,7 @@
         getFormValues,
         handleCreate,
         handleSuccess,
-        registerUserModal,
+        registerRoleModal,
         openModal,
         registerTable,
         changeLoading,

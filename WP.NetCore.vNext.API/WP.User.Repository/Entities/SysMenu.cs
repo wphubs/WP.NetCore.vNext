@@ -8,7 +8,7 @@ using WP.Infrastructures.SqlSugar;
 namespace WP.User.Repository.Entities
 {
 
-    public class SysMenu
+    public class SysMenu : AuditInfo
     {
         public string Path { get; set; }
         public string Name { get; set; }

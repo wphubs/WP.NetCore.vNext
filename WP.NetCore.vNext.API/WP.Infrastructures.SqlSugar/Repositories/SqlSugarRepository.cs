@@ -377,7 +377,7 @@ where TEntity : AuditInfo, new()
     /// <returns></returns>
     public virtual Task<int> UpdateAsync(TEntity entity)
     {
-        return _sqlSugarRepository.Context.Updateable(entity).ExecuteCommandAsync();
+        return _sqlSugarRepository.Context.Updateable(entity).IgnoreColumns(it => new { it.CreateTime, it.CreateBy }).ExecuteCommandAsync();
     }
 
     /// <summary>
@@ -387,6 +387,7 @@ where TEntity : AuditInfo, new()
     /// <returns></returns>
     public virtual Task<int> UpdateAsync(TEntity entity, Expression<Func<TEntity, object>> columns)
     {
+       
         return _sqlSugarRepository.Context.Updateable(entity).UpdateColumns(columns).ExecuteCommandAsync();
     }
 

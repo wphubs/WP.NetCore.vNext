@@ -13,7 +13,6 @@ using Swashbuckle.AspNetCore.Filters;
 using WP.User.Application.Contracts.Services;
 using WP.User.Repository.Entities;
 using WP.User.Application.Services;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
@@ -30,11 +29,8 @@ IConfiguration Configuration = new ConfigurationBuilder()
 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 .AddEnvironmentVariables()
 .Build();
-
-builder.Services.AddSingleton(new Appsettings(builder.Environment.ContentRootPath));
-
+builder.Services.AddSingleton(new Appsettings(AppContext.BaseDirectory));
 JWTSettingsOptions option = Configuration.GetSection("JWTSettings").Get<JWTSettingsOptions>();
-
 var APIName = Appsettings.Get("APIName");
 var basePath = AppContext.BaseDirectory;
 builder.Services.AddJwtAuthentication();

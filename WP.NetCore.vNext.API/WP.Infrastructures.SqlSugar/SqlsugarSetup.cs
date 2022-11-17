@@ -47,7 +47,6 @@ namespace WP.Infrastructures.SqlSugar
                     if (entityInfo.PropertyName == "CreateTime" && entityInfo.OperationType == DataFilterType.InsertByObject)
                     {
                         entityInfo.SetValue(DateTime.Now);//修改CreateTime字段
-                                                          //entityInfo有字段所有参数
                     }
                     //update生效        
                     if (entityInfo.PropertyName == "ModifyTime" && entityInfo.OperationType == DataFilterType.UpdateByObject)

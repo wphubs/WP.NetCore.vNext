@@ -1,9 +1,11 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using System.Text;
 using System.Threading.Tasks;
+using WP.Infrastructures.SqlSugar.Extensions;
 using WP.Shared.Application.Contracts;
 
 namespace WP.User.Application.Services
@@ -12,10 +14,12 @@ namespace WP.User.Application.Services
     public class UserAppService : AbstractAppService, IUserAppService
     {
         private readonly ISqlSugarRepository<SysUser> userRepository;
+        private readonly ISqlSugarRepository<SysRole> roleRepository;
 
-        public UserAppService(ISqlSugarRepository<SysUser> userRepository)
+        public UserAppService(ISqlSugarRepository<SysUser> userRepository, ISqlSugarRepository<SysRole> roleRepository)
         {
             this.userRepository = userRepository;
+            this.roleRepository = roleRepository;
         }
 
 
@@ -35,7 +39,19 @@ namespace WP.User.Application.Services
             objUser.Salt = InfraHelper.Security.GenerateRandomCode(5);
             objUser.Id = IdGenerater.GetNextId();
             objUser.Password = InfraHelper.Hash.GetHashedString(HashType.MD5, objUser.Password, objUser.Salt);
-            await userRepository.InsertReturnIdentityAsync(objUser);
+            var roleList = new List<SysRole>();
+            input.Roles.ForEach(async item =>
+            {
+                roleList.Add(await roleRepository.FirstOrDefaultAsync(x => x.Id == item));
+            });
+            objUser.Roles = roleList;
+            await userRepository.Context.InsertNav(objUser).Include(x => x.Roles, new InsertNavOptions()
+            {
+                ManyToManyNoDeleteMap = true//禁止清空中间表 新功能5.1.3.29-preview01
+
+            }).ExecuteCommandAsync(); ;
+
+
             return objUser.Id;
         }
 
@@ -52,13 +68,25 @@ namespace WP.User.Application.Services
             {
                 return Problem(HttpStatusCode.BadRequest, "用户信息不存在");
             }
-            //if (await userRepository.AnyAsync(x => x.Account == input.Account))
-            //{
-            //    return Problem(HttpStatusCode.BadRequest, "账号已经存在");
-            //}
-            var objRole = input.Adapt<SysUser>();
-            objRole.Id = id;
-            await userRepository.UpdateAsync(objRole, it => new { it.Name, it.Avatar, it.Roles,it.Sex,it.Account });
+            if (await userRepository.AnyAsync(x => x.Account == input.Account && x.Id != id))
+            {
+                return Problem(HttpStatusCode.BadRequest, "账号已经存在");
+            }
+            var objUser = input.Adapt<SysUser>();
+            objUser.Id = id;
+            var roleList = new List<SysRole>();
+            input.Roles.ForEach(async item =>
+            {
+                roleList.Add(await roleRepository.FirstOrDefaultAsync(x => x.Id == item));
+            });
+            objUser.Roles = roleList;
+            await userRepository.Context.UpdateNav(objUser, new UpdateNavRootOptions()
+            {
+                UpdateColumns = EntityExtensions.GetPropertiesUpdateArrary(input).ToArray()
+            }).Include(x => x.Roles, new UpdateNavOptions()
+            {
+                ManyToManyIsUpdateA = true
+            }).ExecuteCommandAsync(); ;
             return DefaultResult();
         }
 
@@ -74,7 +102,7 @@ namespace WP.User.Application.Services
             {
                 return Problem(HttpStatusCode.BadRequest, "用户信息不存在");
             }
-            await userRepository.SoltDeleteAsync(x=>x.Id==id);
+            await userRepository.SoltDeleteAsync(x => x.Id == id);
             return DefaultResult();
 
         }
@@ -100,9 +128,12 @@ namespace WP.User.Application.Services
         /// <returns></returns>
         public async Task<SqlSugarPagedList<UserDto>> GetUserListAsync(UserSearchPagedDto input)
         {
-           var userList=await userRepository.AsQueryable().Includes(role=>role.Roles).ToPagedListAsync(input.PageIndex, input.PageSize);
-           var userDto = userList.Adapt<SqlSugarPagedList<UserDto>>();
-           return userDto;
+            var userList = await userRepository.AsQueryable()
+                .WhereIF(!string.IsNullOrWhiteSpace(input.Account),x=>x.Account.Contains(input.Account))
+                .WhereIF(!string.IsNullOrWhiteSpace(input.Name), x => x.Account.Contains(input.Name))
+                .Includes(role => role.Roles).ToPagedListAsync(input.PageIndex, input.PageSize);
+            var userDto = userList.Adapt<SqlSugarPagedList<UserDto>>();
+            return userDto;
         }
     }
 }

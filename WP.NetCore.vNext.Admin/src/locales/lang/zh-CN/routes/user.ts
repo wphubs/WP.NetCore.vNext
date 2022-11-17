@@ -1,3 +1,3 @@
 export default {
-  user: '用户列表',
+  user: '用户管理',
 };

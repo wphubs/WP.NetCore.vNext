@@ -12,11 +12,11 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref, unref, computed } from 'vue';
-  import { createUser, updateUser } from '/@/api/sys/user';
+  import { createRole, updateRole } from '/@/api/sys/role';
 
   import { schemas } from '../configData';
   import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { BasicForm, useForm } from '/@/components/Form';
+  import { BasicForm, FormSchema, useForm } from '/@/components/Form';
   import { CollapseContainer } from '/@/components/Container';
   import { useMessage } from '/@/hooks/web/useMessage';
   export default defineComponent({
@@ -51,18 +51,13 @@
         isUpdate.value = !!data?.isUpdate;
         if (unref(isUpdate)) {
           var tempData = JSON.parse(JSON.stringify(data.user));
-          tempData.roles = tempData.roles.map((item) => item.id);
           rowId.value = tempData.id;
           setFieldsValue({
             ...tempData,
           });
-          removeSchemaByFiled('password');
-          // setFieldsValue({
-          //   roles: ,
-          // });
         }
       });
-      const getTitle = computed(() => (!unref(isUpdate) ? '新增账号' : '编辑账号'));
+      const getTitle = computed(() => (!unref(isUpdate) ? '新增角色' : '编辑角色'));
 
       const { createMessage } = useMessage();
 
@@ -71,9 +66,9 @@
           const values = await validate();
           setModalProps({ confirmLoading: true });
           if (!unref(isUpdate)) {
-            await createUser(values);
+            await createRole(values);
           } else {
-            await updateUser(rowId.value, values);
+            await updateRole(rowId.value, values);
           }
           setModalProps({ confirmLoading: false });
           emit('success');
