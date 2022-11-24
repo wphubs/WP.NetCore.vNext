@@ -1,28 +1,43 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WP.Infrastructures.Core;
+using WP.Infrastructures.Core.DependencyInjection;
 using WP.Infrastructures.Core.Interfaces;
-
 namespace WP.Shared.WebApi.Registrar;
 
-public abstract partial class AbstractWebApiDependencyRegistrar
+public abstract partial class AbstractWebApiDependencyRegistrar : IDependencyRegistrar
 {
-    /// <summary>
-    /// 注册Application层服务
-    /// </summary>
-    protected virtual void AddApplicationServices()
+    public string Name => "webapi";
+
+    public abstract void AddAdnc();
+    protected IConfiguration Configuration { get; init; }
+    protected IServiceCollection Services { get; init; }
+    //protected IServiceInfo ServiceInfo { get; init; }
+
+
+    protected AbstractWebApiDependencyRegistrar(IServiceCollection services)
     {
-        //var appAssembly = ServiceInfo.GetApplicationAssembly();
-        //if (appAssembly is not null)
-        //{
-        //    var applicationRegistrarType = appAssembly.ExportedTypes.FirstOrDefault(m => m.IsAssignableTo(typeof(IDependencyRegistrar)) && m.IsNotAbstractClass(true));
-        //    if (applicationRegistrarType is not null)
-        //    {
-        //        var applicationRegistrar = Activator.CreateInstance(applicationRegistrarType, Services) as IDependencyRegistrar;
-        //        applicationRegistrar?.AddAdnc();
-        //    }
-        //}
+        Services = services;
+        //Configuration = services.GetConfiguration();
+        Configuration = new ConfigurationBuilder()
+          .SetBasePath(Directory.GetCurrentDirectory())
+          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+          .AddEnvironmentVariables()
+          .Build();
+    }
+
+
+
+    protected virtual void AddWebApiDefault()
+    {
+        Services.AddSingleton(new Appsettings(AppContext.BaseDirectory));
+        AddControllers();
+        AddCorsPolicy();
+        AddSwaggerGen();
     }
 }

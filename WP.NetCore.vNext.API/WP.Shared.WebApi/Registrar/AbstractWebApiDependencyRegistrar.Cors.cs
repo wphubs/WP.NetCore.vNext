@@ -1,19 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using WP.Infrastructures.Core;
 
-namespace WP.Shared.WebApi
+namespace WP.Shared.WebApi.Registrar
 {
-    public static class CorsPolicyService
+    public abstract partial class AbstractWebApiDependencyRegistrar
     {
-        public static void AddCorsPolicy(this IServiceCollection services)
+        protected virtual void AddCorsPolicy()
         {
-            var aa = Appsettings.Get("CorsAccessorSettings", "WithOrigins");
-            services.AddCors(options =>
+            Services.AddCors(options =>
             {
                 // 配置策略
                 options.AddPolicy(Appsettings.Get("CorsAccessorSettings", "PolicyName"), policy =>
@@ -30,4 +29,9 @@ namespace WP.Shared.WebApi
             });
         }
     }
+
+
 }
+
+
+

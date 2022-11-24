@@ -10,63 +10,65 @@ using WP.Shared.WebApi;
 using WP.Infrastructures.EventBus.InMemory.Events;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using WP.User.Application.Contracts.Services;
-using WP.User.Repository.Entities;
 using WP.User.Application.Services;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
-{
-    //忽略循环引用
-    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-    //options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-    //设置时间格式
-    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
-    options.SerializerSettings.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
-});
-IConfiguration Configuration = new ConfigurationBuilder()
-.SetBasePath(Directory.GetCurrentDirectory())
-.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-.AddEnvironmentVariables()
-.Build();
-builder.Services.AddSingleton(new Appsettings(AppContext.BaseDirectory));
-JWTSettingsOptions option = Configuration.GetSection("JWTSettings").Get<JWTSettingsOptions>();
-var APIName = Appsettings.Get("APIName");
-var basePath = AppContext.BaseDirectory;
-builder.Services.AddJwtAuthentication();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(
-    c =>
-    {
-        typeof(ApiVersions).GetEnumNames().ToList().ForEach(version =>
-        {
-            c.SwaggerDoc(version, new OpenApiInfo
-            {
-                Version = version,
-                Title = $"{APIName}接口文档",
-                Description = $"{APIName} HTTP API {version}",
-            });
-            c.OrderActionsBy(o => o.RelativePath);
-        });
-        var xmlPath = Path.Combine(basePath, "WP.User.WebApi.xml");
-        c.IncludeXmlComments(xmlPath, true);// 开启加权小锁
-        c.OperationFilter<AddResponseHeadersFilter>();
-        c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
-        c.OperationFilter<SecurityRequirementsOperationFilter>();
-        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-        {
-            Description = "JWT授权 直接在下框中输入Bearer {token}",
-            Name = "Authorization",//jwt默认的参数名称
-            In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
-            Type = SecuritySchemeType.ApiKey
-        });
-    });
-builder.Services.AddMediatR(typeof(Program));
-builder.Services.AddCorsPolicy();
-builder.Services.AddScoped<IMediatorHandler, InMemoryBus>();
-builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
-builder.Services.AddScoped<IEventStoreService, SqlEventStore>();
+
+
+//builder.Services.AddControllers().AddNewtonsoftJson(options =>
+//{
+//    //忽略循环引用
+//    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+//    //options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+//    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+//    //设置时间格式
+//    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+//    options.SerializerSettings.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
+//});
+
+//IConfiguration Configuration = new ConfigurationBuilder()
+//.SetBasePath(Directory.GetCurrentDirectory())
+//.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+//.AddEnvironmentVariables()
+//.Build();
+//builder.Services.AddSingleton(new Appsettings(AppContext.BaseDirectory));
+//JWTSettingsOptions option = Configuration.GetSection("JWTSettings").Get<JWTSettingsOptions>();
+//var APIName = Appsettings.Get("APIName");
+//var basePath = AppContext.BaseDirectory;
+//builder.Services.AddJwtAuthentication();
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen(
+//    c =>
+//    {
+//        typeof(ApiVersions).GetEnumNames().ToList().ForEach(version =>
+//        {
+//            c.SwaggerDoc(version, new OpenApiInfo
+//            {
+//                Version = version,
+//                Title = $"{APIName}接口文档",
+//                Description = $"{APIName} HTTP API {version}",
+//            });
+//            c.OrderActionsBy(o => o.RelativePath);
+//        });
+//        var xmlPath = Path.Combine(basePath, "WP.User.WebApi.xml");
+//        c.IncludeXmlComments(xmlPath, true);// 开启加权小锁
+//        c.OperationFilter<AddResponseHeadersFilter>();
+//        c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+//        c.OperationFilter<SecurityRequirementsOperationFilter>();
+//        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+//        {
+//            Description = "JWT授权 直接在下框中输入Bearer {token}",
+//            Name = "Authorization",//jwt默认的参数名称
+//            In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
+//            Type = SecuritySchemeType.ApiKey
+//        });
+//    });
+
+//builder.Services.AddMediatR(typeof(Program));
+//builder.Services.AddScoped<IMediatorHandler, InMemoryBus>();
+//builder.Services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+//builder.Services.AddScoped<IEventStoreService, SqlEventStore>();
 IdGenerater.SetWorkerId(Appsettings.Get("WorkerId"));
+
 builder.Services.AddSqlsugarSetup(Appsettings.Get("DBConnection"),new List<Type>() { typeof(SysUser), typeof(StoredEvent) });
 builder.Services.AddScoped<ISqlSugarRepository, SqlSugarRepository>();
 builder.Services.AddScoped(typeof(ISqlSugarRepository<>), typeof(SqlSugarRepository<>));
